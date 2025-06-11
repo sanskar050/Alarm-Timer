@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <link rel="shortcut icon" href="timer.gif" type="image/x-icon">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .time {
+            font-size: 26px;
+        }
+
+        .input {
+            display: flex;
+            gap: 15px;
+        }
+
+        .input > div div {
+            font-size: 18px;
+        }
+
+        .input_hour, .input_minute, .input_second {
+            height: 35px;
+            width: 150px;
+            font-size: larger;
+            outline: none;
+        }
+
+        button {
+            width: 150px;
+            padding: 10px;
+            font-size: large;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .stop {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Timer</h1>
+
+    <audio src="alarm.mp3"></audio>
+
+    <div class="time">
+        <span class="hour">00</span>
+        <span class="colon">:</span>
+        <span class="minute">00</span>
+        <span class="colon">:</span>
+        <span class="second">00</span>
+    </div>
+
+    <div class="input">
+
+        <div>
+            <input class="input_hour" type="number" value="00" placeholder="Enter Hours">
+            <div>Hours</div>
+        </div>
+        
+        <div>
+            <input class="input_minute" type="number" value="00" placeholder="Enter Minutes">
+            <div>Minutes</div>
+        </div>
+
+        <div>
+            <input class="input_second" type="number" value="00" placeholder="Enter Seconds">
+            <div>Seconds</div>
+        </div>
+
+    </div>
+
+    <div class="buttons">
+        <button onclick="setTimer()" class="start">Start</button>
+        <button onclick="resetTimer()" class="reset">Reset</button>
+    </div>
+
+    <div class="audio-controls">
+        <button onclick="stopAlarm()" class="stop">Stop Alarm</button>
+    </div>
+
+    <script>
+        let timerInterval;
+        
+        function setTimer() {
+
+            clearInterval(timerInterval);
+
+            const input_hour = document.querySelector('.input_hour').value;
+            document.querySelector('.input_hour').value = "00";
+            const input_minute = document.querySelector('.input_minute').value;
+            document.querySelector('.input_minute').value = "00";
+            const input_second = document.querySelector('.input_second').value;
+            document.querySelector('.input_second').value = "00";
+
+            if (input_hour === '' && input_minute === '' && input_second === '') {
+                alert('Please enter a valid time');
+            }
+
+            else if (input_hour === '' || input_minute === '' || input_second === '') {
+                alert('Please fill all fields');
+            }
+
+            else if (input_hour < 0 || input_minute < 0 || input_second < 0) {
+                alert('Time cannot be negative');
+            }
+
+            else if (input_minute >= 60 || input_second >= 60) {
+                alert('Minutes and Seconds should be less than 60!');
+            }
+
+            else {
+                document.querySelector(".hour").innerHTML = input_hour;
+                document.querySelector(".minute").innerHTML = input_minute;
+                document.querySelector(".second").innerHTML = input_second;
+            }
+            document.querySelector(".start").disabled = true;
+            document.querySelector(".start").style.backgroundColor = "gray";
+            startTimer();
+        }
+
+        function startTimer() {
+            let hour = parseInt(document.querySelector(".hour").innerHTML);
+            let minute = parseInt(document.querySelector(".minute").innerHTML);
+            let second = parseInt(document.querySelector(".second").innerHTML);
+
+            timerInterval = setInterval(() => {
+                if (second === 0) {
+                    if (minute === 0) {
+                        if (hour === 0) {
+                            clearInterval(timerInterval);
+                            document.querySelector("audio").play();
+                            document.querySelector(".stop").style.display = "block";
+                            document.querySelector(".reset").disabled = true;
+                            document.querySelector(".reset").style.backgroundColor = "gray";
+                            setInterval(() => {
+                                document.querySelector(".start").disabled = false;
+                                document.querySelector(".start").style.backgroundColor = "#4CAF50";
+                                document.querySelector(".reset").disabled = false;
+                                document.querySelector(".reset").style.backgroundColor = "#4CAF50";
+                                document.querySelector(".stop").style.display = "none";
+                            }, 7500);
+                        } else {
+                            hour--;
+                            minute = 59;
+                            second = 59;
+                        }
+                    } else {
+                        minute--;
+                        second = 59;
+                    }
+                } else {
+                    second--;
+                }
+
+                document.querySelector(".hour").innerHTML = String(hour).padStart(2, '0');
+                document.querySelector(".minute").innerHTML = String(minute).padStart(2, '0');
+                document.querySelector(".second").innerHTML = String(second).padStart(2, '0');
+            }, 1000);
+        }
+
+        function stopAlarm() {
+            document.querySelector("audio").pause();
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            document.querySelector(".hour").innerHTML = "00";
+            document.querySelector(".minute").innerHTML = "00";
+            document.querySelector(".second").innerHTML = "00";
+        }
+    </script>
+</body>
+
+</html>
